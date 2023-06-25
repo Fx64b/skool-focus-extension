@@ -1,0 +1,28 @@
+{
+    "manifest_version": 3,
+    "name": "Skool Focus",
+    "version": "0.0",
+    "author": "Fx64b",
+    "description": "A browser extension that helps you focus while you use the skool.com website.",
+    "permissions": [
+      "scripting",
+      "activeTab"
+    ],
+    "icons": {
+        "16": "images/icon-16.png",
+        "32": "images/icon-32.png",
+        "48": "images/icon-48.png",
+        "128": "images/icon-128.png"
+    },
+    "content_scripts": [
+      {
+        "matches": ["https://www.skool.com/*"],
+        "js": ["content.js"]
+      }
+    ],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "action": {}
+  }
+  
