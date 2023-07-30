@@ -4,7 +4,7 @@ A browser extension that helps you focus while you use the skool.com website.
 <br>
 
 ## Features (WIP)
-- [ ] Hide Notification Badges
+- [x] Hide Notification Badges
   
 - **Community Page**
   - [ ] Hide Leaderboard
