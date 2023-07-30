@@ -1,7 +1,14 @@
 const xpathsToToggle = [
   "//*[@id='__next']/div/div/div[1]/div/div[1]/div[3]/div/div[2]/span/span", // notification badge
   "//*[@id='__next']/div/div/div[1]/div/div[1]/div[3]/div/div[1]/span/span", // message badge
-  "//*[@id='__next']/div/div/div[3]/div/div[1]/div/div/div[1]/div[2]", // posts on community feed
+  "//*[@id='__next']/div/div/div[3]/div/div[1]/div/div/div[1]/div[2]", // posts on community feed (also hides video in classroom section, unwanted)
+  "//*[@id='__next']/div/div/div[3]/div/div[1]/div/div/div[1]", // "write something", tags and "previous - next" (also hides video in classroom section, unwanted) 
+  "//*[@id='__next']/div/div/div[3]/div/div[3]/div", // community sidebar + 30 day leaderboard
+  "//*[@id='__next']/div/div/div[1]/div/div[2]/a[1]", // community tab link
+  "//*[@id='__next']/div/div/div[1]/div/div[2]/a[3]", // calendar tab link
+  "//*[@id='__next']/div/div/div[1]/div/div[2]/a[4]", // members tab link
+  "//*[@id='__next']/div/div/div[1]/div/div[2]/a[5]", // leaderboard tab link
+  "//*[@id='__next']/div/div/div[1]/div/div[2]/a[6]", // about tab link
 ];
 
 function toggleElements(xpathExpressions, shouldHide) {
