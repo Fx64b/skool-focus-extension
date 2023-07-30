@@ -23,3 +23,7 @@ A browser extension that helps you focus while you use the skool.com website.
   - [ ] Disable all Notifications
   - [ ] Option to force zen mode for 30-90 minutes
   
+<br>
+
+### Known Issues and Limitations
+- Only works on chrome/chromium based browsers at the moment
