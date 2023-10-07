@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Skool Focus Settings</title>
+    <style>
+      body {
+        width: 200px;
+      }
+
+      .toggle {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 54px;
+        height: 26px;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: 0.4s;
+        transition: 0.4s;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 22px;
+        width: 22px;
+        left: 2px;
+        bottom: 2px;
+        background-color: white;
+        -webkit-transition: 0.4s;
+        transition: 0.4s;
+      }
+
+      input:checked + .slider {
+        background-color: #2196f3;
+      }
+
+      input:focus + .slider {
+        box-shadow: 0 0 1px #2196f3;
+      }
+
+      input:checked + .slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+      }
+
+      .slider.round {
+        border-radius: 34px;
+      }
+
+      .slider.round:before {
+        border-radius: 50%;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Skool Focus Settings</h2>
+
+    <div class="toggle">
+      <span>Toggle All</span>
+      <label class="switch">
+        <input type="checkbox" id="toggleAll" />
+        <span class="slider round"></span>
+      </label>
+    </div>
+
+    <div>
+      <h3>Individual Settings</h3>
+      <div class="toggle">
+        <span>Toggle Notifications</span>
+        <label class="switch">
+          <input type="checkbox" id="toggleNotifications" />
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <div class="toggle">
+        <span>Toggle Community Feed</span>
+        <label class="switch">
+          <input type="checkbox" id="toggleCommunityFeed" />
+          <span class="slider round"></span>
+        </label>
+      </div>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
