@@ -12,19 +12,15 @@ const allXpaths = [
   "//*[@id='__next']/div/div/div[1]/div/div[2]/a[6]", // about tab link
 ];
 
-
-
 // -----------------------------
 // different blocking categories
 // -----------------------------
 
-// hides notification badges
 const notifications= [
   "//*[@id='__next']/div/div/div[1]/div/div[1]/div[3]/div/div[1]/span/span", // notification badge
   "//*[@id='__next']/div/div/div[1]/div/div[1]/div[3]/div/div[2]/span/span", // message badge
 ];
 
-// hides the tab links to the different categories, except from the classroom tab
 const tabLinks = [
   "//*[@id='__next']/div/div/div[1]/div/div[2]/a[1]", // community tab link
   "//*[@id='__next']/div/div/div[1]/div/div[2]/a[3]", // calendar tab link
@@ -33,7 +29,6 @@ const tabLinks = [
   "//*[@id='__next']/div/div/div[1]/div/div[2]/a[6]", // about tab link
 ]
 
-// hides the posts on the community feed
 const communityFeed = [
   "//*[@id='__next']/div/div/div[3]/div/div[1]/div/div/div[1]/div[2]", // all posts on the community feed
   "//*[@id='__next']/div/div/div[3]/div/div[1]/div/div/div[1]/div[3]", // "previous - next" navigation
@@ -46,9 +41,22 @@ const communityFeedHeader = [
   "//*[@id='__next']/div/div/div[3]/div/div[1]/div/div/div[1]/div[1]/div/div[3]", // categories
 ]
 
+const classroomSection = [
+  "//*[@id='__next']/div/div/div[3]/div/div/div[2]/div/div", 
+  "//*[@id='__next']/div/div/div[3]/div/div/div[1]/div/div[1]", // Title and completion status
+  "//*[@id='__next']/div/div/div[3]/div/div/div[2]/div/div/div[2]", // post content
+  "//*[@id='__next']/div/div/div[3]/div/div/div[1]/div/div[1]/div[2]" // completion status
+];
 
-// which element should be hidden
-const elementsToHide = notifications;
+
+const elementsToHide = allXpaths;
+
+// fixes issue with hidden classroom content elements
+function fixClassroomSection() {
+  if(window.location.href.includes("/classroom")) {
+    toggleElements(classroomSection, false);
+  }
+}
 
 
 function toggleElements(xpathExpressions, shouldHide) {
@@ -57,7 +65,7 @@ function toggleElements(xpathExpressions, shouldHide) {
     let element = xpathResult.iterateNext();
 
     while (element) {
-      element.style.display = shouldHide ? "none" : ""; 
+      element.style.display = shouldHide ? "none" : "initial"; 
       element = xpathResult.iterateNext();
     }
   });
@@ -70,6 +78,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   } else if (message.message === "tab_update") {
     chrome.storage.sync.get("hideElements", function (data) {
       toggleElements(elementsToHide, data.hideElements);
+      fixClassroomSection();
     });
   }
 });
@@ -80,6 +89,7 @@ function toggleAndSyncElements() {
     const shouldHide = !data.hideElements;
     chrome.storage.sync.set({ hideElements: shouldHide });
     toggleElements(elementsToHide, shouldHide);
+    fixClassroomSection();
 
     // Send a message to other tabs to update their state
     chrome.runtime.sendMessage({ hideElements: shouldHide });
@@ -88,5 +98,5 @@ function toggleAndSyncElements() {
 
 // Retrieve state from chrome.storage.sync and toggle
 chrome.storage.sync.get("hideElements", function (data) {
-  toggleElements(elementsToHide, data.hideElements);
+  toggleAndSyncElements(elementsToHide);
 });
