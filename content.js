@@ -74,7 +74,7 @@ function toggleElements(xpathExpressions, shouldHide) {
       null,
     );
     let element = xpathResult.iterateNext();
-
+    console.log("Element: " + element + " xpathExpression: " + xpathExpression + " shouldHide: " + shouldHide);
     while (element) {
       element.style.display = shouldHide ? "none" : "initial";
       element = xpathResult.iterateNext();
@@ -83,10 +83,9 @@ function toggleElements(xpathExpressions, shouldHide) {
 }
 
 // TODO: conver ifs to shorthand
-function getElementsToHide() {
+function updateElementsToHide() {
   elementsToHide = [];
   chrome.storage.sync.get(function (result) {
-    console.log(result);
     if (result.hideElements.all) {
       elementsToHide.push(...allXpaths);
     } else {
@@ -97,8 +96,9 @@ function getElementsToHide() {
         elementsToHide.push(...communityFeed);
       }
     }
+    toggleElements(elementsToHide, true);
+    fixClassroomSection();
   });
-  return elementsToHide;
 }
 
 // listen for messages from the background script
@@ -106,28 +106,20 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.message === "toggle_element") {
     toggleAndSyncElements();
   } else if (message.message === "tab_update") {
-    console.log("tab_update"); // TODO: remove
     chrome.storage.sync.get("hideElements", function (data) {
-      elementsToHide = getElementsToHide();
-      toggleElements(elementsToHide, data.hideElements);
-      fixClassroomSection();
+      toggleElements(allXpaths, false); // Display all elements before hiding
+      updateElementsToHide();
     });
   }
 });
 
 // Function to toggle elements and sync the state using chrome.storage.sync.
 function toggleAndSyncElements() {
-  chrome.storage.sync.get("hideElements", function (data) {
-    const shouldHide = !data.hideElements;
-    chrome.storage.sync.set({ hideElements: shouldHide });
+  toggleElements(allXpaths, false); // Display all elements before hiding
+  updateElementsToHide(); // TODO: simplify
 
-    elementsToHide = getElementsToHide();
-    toggleElements(elementsToHide, shouldHide);
-    fixClassroomSection();
-
-    // Send a message to other tabs to update their state
-    chrome.runtime.sendMessage({ hideElements: shouldHide });
-  });
+  // Send a message to other tabs to update their state
+  chrome.runtime.sendMessage({ hideElements: true });
 }
 
 // Retrieve state from chrome.storage.sync and toggle
