@@ -1,3 +1,4 @@
+// probably not needed anymore
 function toggleElement() {
   chrome.tabs.query({}, function (tabs) {
     for (const tab of tabs) {

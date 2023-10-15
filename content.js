@@ -10,6 +10,13 @@ const allXpaths = [
   '//*[@id="__next"]/div/div/div[1]/div/div[2]/a[4]', // members tab link
   '//*[@id="__next"]/div/div/div[1]/div/div[2]/a[5]', // leaderboard tab link
   '//*[@id="__next"]/div/div/div[1]/div/div[2]/a[6]', // about tab link
+  '//*[@id="__next"]/div/div/div[3]/div/div/div[2]/div/div', // something in classroom section
+  '//*[@id="__next"]/div/div/div[3]/div/div/div[1]/div/div[1]', // Title and completion status
+  '//*[@id="__next"]/div/div/div[3]/div/div/div[2]/div/div/div[2]', // post content
+  '//*[@id="__next"]/div/div/div[3]/div/div/div[1]/div/div[1]/div[2]', // completion status
+  '//*[@id="__next"]/div/div/div[3]/div/div[1]/div/div/div[1]/div[1]/div/div[1]', // 'write something'
+  '//*[@id="__next"]/div/div/div[3]/div/div[1]/div/div/div[1]/div[1]/div/div[2]', // upcoming events
+  '//*[@id="__next"]/div/div/div[3]/div/div[1]/div/div/div[1]/div[1]/div/div[3]', // categories
 ];
 
 // -----------------------------
@@ -48,11 +55,11 @@ const classroomSection = [
   '//*[@id="__next"]/div/div/div[3]/div/div/div[1]/div/div[1]/div[2]', // completion status
 ];
 
-const elementsToHide = allXpaths;
+let elementsToHide = allXpaths;
 
 // fixes issue with hidden classroom content elements
 function fixClassroomSection() {
-  if (window.location.href.includes('/classroom')) {
+  if (window.location.href.includes("/classroom")) {
     toggleElements(classroomSection, false);
   }
 }
@@ -69,18 +76,39 @@ function toggleElements(xpathExpressions, shouldHide) {
     let element = xpathResult.iterateNext();
 
     while (element) {
-      element.style.display = shouldHide ? 'none' : 'initial';
+      element.style.display = shouldHide ? "none" : "initial";
       element = xpathResult.iterateNext();
     }
   });
 }
 
+// TODO: conver ifs to shorthand
+function getElementsToHide() {
+  elementsToHide = [];
+  chrome.storage.sync.get(function (result) {
+    console.log(result);
+    if (result.hideElements.all) {
+      elementsToHide.push(...allXpaths);
+    } else {
+      if (result.hideElements.notifications) {
+        elementsToHide.push(...notifications);
+      }
+      if (result.hideElements.communityFeed) {
+        elementsToHide.push(...communityFeed);
+      }
+    }
+  });
+  return elementsToHide;
+}
+
 // listen for messages from the background script
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  if (message.message === 'toggle_element') {
+  if (message.message === "toggle_element") {
     toggleAndSyncElements();
-  } else if (message.message === 'tab_update') {
-    chrome.storage.sync.get('hideElements', function (data) {
+  } else if (message.message === "tab_update") {
+    console.log("tab_update"); // TODO: remove
+    chrome.storage.sync.get("hideElements", function (data) {
+      elementsToHide = getElementsToHide();
       toggleElements(elementsToHide, data.hideElements);
       fixClassroomSection();
     });
@@ -89,9 +117,11 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
 // Function to toggle elements and sync the state using chrome.storage.sync.
 function toggleAndSyncElements() {
-  chrome.storage.sync.get('hideElements', function (data) {
+  chrome.storage.sync.get("hideElements", function (data) {
     const shouldHide = !data.hideElements;
     chrome.storage.sync.set({ hideElements: shouldHide });
+
+    elementsToHide = getElementsToHide();
     toggleElements(elementsToHide, shouldHide);
     fixClassroomSection();
 
@@ -101,6 +131,6 @@ function toggleAndSyncElements() {
 }
 
 // Retrieve state from chrome.storage.sync and toggle
-chrome.storage.sync.get('hideElements', function (data) {
-  toggleAndSyncElements(elementsToHide);
+chrome.storage.sync.get("hideElements", function (data) {
+  toggleAndSyncElements();
 });
