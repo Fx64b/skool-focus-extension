@@ -74,7 +74,7 @@ function toggleElements(xpathExpressions, shouldHide) {
       null,
     );
     let element = xpathResult.iterateNext();
-    console.log("Element: " + element + " xpathExpression: " + xpathExpression + " shouldHide: " + shouldHide);
+
     while (element) {
       element.style.display = shouldHide ? "none" : "initial";
       element = xpathResult.iterateNext();
@@ -96,6 +96,7 @@ function updateElementsToHide() {
         elementsToHide.push(...communityFeed);
       }
     }
+    toggleElements(allXpaths, false); // Display all elements before hiding
     toggleElements(elementsToHide, true);
     fixClassroomSection();
   });
@@ -107,7 +108,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     toggleAndSyncElements();
   } else if (message.message === "tab_update") {
     chrome.storage.sync.get("hideElements", function (data) {
-      toggleElements(allXpaths, false); // Display all elements before hiding
       updateElementsToHide();
     });
   }
@@ -115,9 +115,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
 // Function to toggle elements and sync the state using chrome.storage.sync.
 function toggleAndSyncElements() {
-  toggleElements(allXpaths, false); // Display all elements before hiding
-  updateElementsToHide(); // TODO: simplify
-
+  updateElementsToHide();
   // Send a message to other tabs to update their state
   chrome.runtime.sendMessage({ hideElements: true });
 }
