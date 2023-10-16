@@ -7,16 +7,16 @@ A browser extension that helps you focus while you use the skool.com website.
 - [x] Hide Notification Badges
   
 - **Community Page**
-  - [ ] Hide Leaderboard
-  - [ ] Hide "Online", "Members", "Admins" + Pictures
+  - [x] Hide Leaderboard
+  - [x] Hide "Online", "Members", "Admins" + Pictures
   - [ ] Hide Author in post preview
   - [ ] Hide Likes, Comments and Pictures in post preview
-  - [ ] Hide Post Categories
+  - [x] Hide Post Categories
 
  
   **Zen Mode**
   - [x] Disable all Tabs except for Classroom
-  - [ ] Hide everything on the community tab
+  - [x] Hide everything on the community tab
   - [x] Hide Leaderboard
   - [x] Hide Calendar
   - [x] Hide Members
