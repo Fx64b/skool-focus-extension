@@ -6,7 +6,12 @@
     <title>Skool Focus Settings</title>
     <style>
       body {
-        width: 200px;
+        width: 230px;
+      }
+
+      h2, h3 {
+        font-weight: 600;
+        margin-bottom: 10px;
       }
 
       .toggle {
@@ -15,10 +20,15 @@
         margin-bottom: 10px;
       }
 
+      .toggle span {
+        font-size: 14px;
+        margin-left: 10px;
+      }
+
       .switch {
         position: relative;
         display: inline-block;
-        width: 54px;
+        width: 62px;
         height: 26px;
       }
 
@@ -53,11 +63,11 @@
       }
 
       input:checked + .slider {
-        background-color: #2196f3;
+        background-color: #008cff;
       }
 
       input:focus + .slider {
-        box-shadow: 0 0 1px #2196f3;
+        box-shadow: 0 0 1px #008cff;
       }
 
       input:checked + .slider:before {
@@ -79,7 +89,7 @@
     <h2>Skool Focus Settings</h2>
 
     <div class="toggle">
-      <span>Toggle All</span>
+      <span>Focus Mode</span>
       <label class="switch">
         <input type="checkbox" id="toggleAll" />
         <span class="slider round"></span>
@@ -89,16 +99,30 @@
     <div>
       <h3>Individual Settings</h3>
       <div class="toggle">
-        <span>Toggle Notifications</span>
+        <span>Notifications</span>
         <label class="switch">
           <input type="checkbox" id="toggleNotifications" />
           <span class="slider round"></span>
         </label>
       </div>
       <div class="toggle">
-        <span>Toggle Community Feed</span>
+        <span>Tab Links</span>
+        <label class="switch">
+          <input type="checkbox" id="toggleTabLinks" />
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <div class="toggle">
+        <span>Community Feed</span>
         <label class="switch">
           <input type="checkbox" id="toggleCommunityFeed" />
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <div class="toggle">
+        <span>Community Feed Top</span>
+        <label class="switch">
+          <input type="checkbox" id="toggleFeedTop" />
           <span class="slider round"></span>
         </label>
       </div>

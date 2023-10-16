@@ -64,6 +64,25 @@ function fixClassroomSection() {
   }
 }
 
+function toggleFocusText(display) {
+  if(!display) {
+    if(document.getElementById("focus-text")){
+      document.getElementById("focus-text").remove();
+    }
+  } else {
+    console.log("adding focus text"); 
+    let text = document.createElement("p");
+    text.setAttribute("id", "focus-text");
+    text.innerHTML = "Get Back to Work <b>RN</b>!";
+    text.style.position = "fixed";
+    text.style.top = "50%";
+    text.style.left = "50%";
+    text.style.transform = "translate(-50%, -50%)";
+    text.style.fontSize = "50px";
+    document.body.appendChild(text);
+  }
+}
+
 function toggleElements(xpathExpressions, shouldHide) {
   xpathExpressions.forEach((xpathExpression) => {
     const xpathResult = document.evaluate(
@@ -82,18 +101,25 @@ function toggleElements(xpathExpressions, shouldHide) {
   });
 }
 
-// TODO: conver ifs to shorthand
 function updateElementsToHide() {
   elementsToHide = [];
   chrome.storage.sync.get(function (result) {
     if (result.hideElements.all) {
       elementsToHide.push(...allXpaths);
+      toggleFocusText(true);
     } else {
+      toggleFocusText(false);
       if (result.hideElements.notifications) {
         elementsToHide.push(...notifications);
       }
+      if (result.hideElements.tabLinks) {
+        elementsToHide.push(...tabLinks);
+      }
       if (result.hideElements.communityFeed) {
         elementsToHide.push(...communityFeed);
+      }
+      if (result.hideElements.communityFeedHeader) {
+        elementsToHide.push(...communityFeedHeader);
       }
     }
     toggleElements(allXpaths, false); // Display all elements before hiding
@@ -104,6 +130,7 @@ function updateElementsToHide() {
 
 // listen for messages from the background script
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  toggleFocusText(false);
   if (message.message === "toggle_element") {
     toggleAndSyncElements();
   } else if (message.message === "tab_update") {

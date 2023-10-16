@@ -2,7 +2,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const toggleButtons = {
     toggleAll: "all",
     toggleNotifications: "notifications",
+    toggleTabLinks: "tabLinks",
     toggleCommunityFeed: "communityFeed",
+    toggleFeedTop: "communityFeedHeader",
   };
 
   // Function to update the UI state of toggle buttons
