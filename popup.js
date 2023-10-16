@@ -22,7 +22,22 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  function disableIfNotOnSkool() {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      const currentTab = tabs[0];
+      if (!currentTab.url.includes("skool.com")) {
+        Object.keys(toggleButtons).forEach((buttonId) => {
+          const button = document.getElementById(buttonId);
+          button.disabled = true;
+        });
+        const overlay = document.getElementById("overlay");
+        overlay.style.display = "block";
+      }
+    });
+  }
+
   updateToggleButtonState();
+  disableIfNotOnSkool();
 
   Object.keys(toggleButtons).forEach((buttonId) => {
     const button = document.getElementById(buttonId);
@@ -43,5 +58,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       });
     });
+  });
+
+  document.getElementById('skoolLink').addEventListener('click', function () {
+    chrome.tabs.create({ url: 'https://www.skool.com' });
+  });
+
+  document.getElementById('githubLink').addEventListener('click', function () {
+    chrome.tabs.create({ url: 'https://github.com/Fx64b/skool-focus-extension' });
   });
 });

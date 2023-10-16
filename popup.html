@@ -7,6 +7,7 @@
     <style>
       body {
         width: 230px;
+        padding-bottom: 20px;
       }
 
       h2, h3 {
@@ -83,6 +84,35 @@
       .slider.round:before {
         border-radius: 50%;
       }
+
+      #overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #000000;
+        opacity: 0.9;
+        color: white;
+        text-align: center;
+        padding-top: 25%;
+        font-weight: 600;
+        font-size: 20px;
+      }
+
+      #overlay a,
+      #overlay a:visited {
+        color: #008cff;
+      }
+
+      #githubLink {
+        position: fixed;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
     </style>
   </head>
   <body>
@@ -126,6 +156,11 @@
           <span class="slider round"></span>
         </label>
       </div>
+    </div>
+
+    <a href="#" id="githubLink">Source Code</a>
+    <div id="overlay">
+      You need to be on <a href="#" id="skoolLink">skool.com</a> to use this extension.
     </div>
 
     <script src="popup.js"></script>
