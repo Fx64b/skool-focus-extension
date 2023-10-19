@@ -61,6 +61,7 @@ let elementsToHide = allXpaths;
 function fixClassroomSection() {
   if (window.location.href.includes("/classroom")) {
     toggleElements(classroomSection, false);
+    toggleFocusText(false);
   }
 }
 
