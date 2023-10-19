@@ -70,7 +70,6 @@ function toggleFocusText(display) {
       document.getElementById("focus-text").remove();
     }
   } else {
-    console.log("adding focus text"); 
     let text = document.createElement("p");
     text.setAttribute("id", "focus-text");
     text.innerHTML = "Get Back to Work <b>RN</b>!";
@@ -103,7 +102,7 @@ function toggleElements(xpathExpressions, shouldHide) {
 
 function updateElementsToHide() {
   elementsToHide = [];
-  chrome.storage.sync.get(function (result) {
+  browser.storage.sync.get().then((result)=> {
     if (result.hideElements.all) {
       elementsToHide.push(...allXpaths);
       toggleFocusText(true);
@@ -129,25 +128,22 @@ function updateElementsToHide() {
 }
 
 // listen for messages from the background script
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+browser.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   toggleFocusText(false);
   if (message.message === "toggle_element") {
     toggleAndSyncElements();
   } else if (message.message === "tab_update") {
-    chrome.storage.sync.get("hideElements", function (data) {
-      updateElementsToHide();
-    });
+    browser.storage.sync.get("hideElements").then(updateElementsToHide); // because no parameter is used, we should consider another solution
   }
 });
 
-// Function to toggle elements and sync the state using chrome.storage.sync.
+// Function to toggle elements and sync the state
 function toggleAndSyncElements() {
   updateElementsToHide();
   // Send a message to other tabs to update their state
-  chrome.runtime.sendMessage({ hideElements: true });
+  browser.runtime.sendMessage({ hideElements: true });
 }
 
-// Retrieve state from chrome.storage.sync and toggle
-chrome.storage.sync.get("hideElements", function (data) {
-  toggleAndSyncElements();
-});
+// Retrieve state from storage
+// Because we don't need data, another solution should be used to call the function
+browser.storage.sync.get("hideElements").then(toggleAndSyncElements);
