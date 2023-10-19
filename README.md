@@ -26,8 +26,8 @@ A browser extension that helps you focus while you use the skool.com website.
 <br>
 
 ### Known Issues and Limitations
-- Only works on chrome/chromium based browsers at the moment
 - Sometimes there is a small lag when hiding elements after switching tabs
+- Some elements don't return to their original style after hiding
 
 <br>
 
