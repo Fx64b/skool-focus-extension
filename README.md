@@ -28,3 +28,9 @@ A browser extension that helps you focus while you use the skool.com website.
 ### Known Issues and Limitations
 - Only works on chrome/chromium based browsers at the moment
 - Sometimes there is a small lag when hiding elements after switching tabs
+
+<br>
+
+## Other Stuff
+This extension uses a browser polyfill library to support multiple browsers.
+More Information here: https://github.com/mozilla/webextension-polyfill

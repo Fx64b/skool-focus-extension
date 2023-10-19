@@ -16,12 +16,15 @@
         "128": "images/icon-128.png"
     },
     "background": {
-      "service_worker": "background.js"
+      "service_worker": "serviceWorker.js"
     },
     "content_scripts": [
       {
         "matches": ["https://www.skool.com/*"],
-        "js": ["content.js"]
+        "js": [
+          "browser-polyfill.min.js",
+          "content.js"
+        ]
       }
     ],
     
