@@ -84,19 +84,19 @@ function toggleFocusText(display) {
 }
 
 function toggleElements(xpathExpressions, shouldHide) {
-  xpathExpressions.forEach((xpathExpression) => {
+  xpathExpressions.forEach((xpathExpression, i) => {
     const xpathResult = document.evaluate(
       xpathExpression,
       document,
       null,
-      XPathResult.ORDERED_NODE_ITERATOR_TYPE,
+      XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
       null,
     );
-    let element = xpathResult.iterateNext();
 
-    while (element) {
-      element.style.display = shouldHide ? "none" : "initial";
-      element = xpathResult.iterateNext();
+    let element = xpathResult.snapshotItem(i);
+    console.log(i);
+    for (let i=0 ; i < xpathResult.snapshotLength; i++) {
+      xpathResult.snapshotItem(i).style.opacity = shouldHide ? "0" : "1";
     }
   });
 }
