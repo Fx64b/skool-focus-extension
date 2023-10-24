@@ -27,8 +27,6 @@ A browser extension that helps you focus while you use the skool.com website.
 
 ### Known Issues and Limitations
 - Sometimes there is a small lag when hiding elements after switching tabs
-- Some elements don't return to their original style after hiding
-- Calendar, Members and Leaderboard content is not hidden correctly
 
 <br>
 
