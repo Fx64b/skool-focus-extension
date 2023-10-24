@@ -94,7 +94,7 @@ function toggleElements(xpathExpressions, shouldHide) {
     );
 
     let element = xpathResult.snapshotItem(i);
-    console.log(i);
+  
     for (let i=0 ; i < xpathResult.snapshotLength; i++) {
       xpathResult.snapshotItem(i).style.opacity = shouldHide ? "0" : "1";
     }
