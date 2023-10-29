@@ -97,6 +97,9 @@ function toggleElements(xpathExpressions, shouldHide) {
   
     for (let i=0 ; i < xpathResult.snapshotLength; i++) {
       xpathResult.snapshotItem(i).style.opacity = shouldHide ? "0" : "1";
+      // prevents elements form being clickable because opacity only makes them invisible but not unclickable
+      xpathResult.snapshotItem(i).disabled = shouldHide;
+      xpathResult.snapshotItem(i).style.pointerEvents = shouldHide ? "none" : "auto";
     }
   });
 }
