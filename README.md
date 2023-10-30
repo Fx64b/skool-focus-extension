@@ -21,14 +21,14 @@ A browser extension that helps you focus while you use the skool.com website.
   - [x] Hide Post Categories
 
  
-  **Zen Mode**
+  **Focus Mode**
   - [x] Disable all Tabs except for Classroom
   - [x] Hide everything on the community tab
   - [x] Hide Leaderboard
   - [x] Hide Calendar
   - [x] Hide Members
   - [x] Disable all Notifications
-  - [ ] Option to force zen mode for 30-90 minutes
+  - [ ] Option to force focus mode for 30-90 minutes
   
 <br>
 
