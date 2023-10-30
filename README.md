@@ -3,6 +3,13 @@ A browser extension that helps you focus while you use the skool.com website.
 
 <br>
 
+## Get it here
+**Chrome:** https://chrome.google.com/webstore/detail/skool-focus/
+
+**Firefox:** https://addons.mozilla.org/en-US/firefox/addon/skool-focus/
+
+<br>
+
 ## Features (WIP)
 - [x] Hide Notification Badges
   
