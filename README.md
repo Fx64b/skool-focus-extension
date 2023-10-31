@@ -4,7 +4,7 @@ A browser extension that helps you focus while you use the skool.com website.
 <br>
 
 ## Get it here
-**Chrome:** https://chrome.google.com/webstore/detail/skool-focus/
+**Chrome:** https://chrome.google.com/webstore/detail/skool-focus/nchfffdkbhafombnfcpladflclakmdmo
 
 **Firefox:** https://addons.mozilla.org/en-US/firefox/addon/skool-focus/
 
