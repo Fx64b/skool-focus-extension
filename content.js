@@ -17,6 +17,9 @@ const allXpaths = [
   '//*[@id="__next"]/div/div/div[3]/div/div[1]/div/div/div[1]/div[1]/div/div[1]', // 'write something'
   '//*[@id="__next"]/div/div/div[3]/div/div[1]/div/div/div[1]/div[1]/div/div[2]', // upcoming events
   '//*[@id="__next"]/div/div/div[3]/div/div[1]/div/div/div[1]/div[1]/div/div[3]', // categories
+  '//*[@id="__next"]/div/div/div[2]/div/div/div[3]/div/div[2]/span/span', // notification badge when scrolling down (skool creates a different header when scrolling down for some reason)
+  '//*[@id="__next"]/div/div/div[2]/div/div/div[3]/div/div[1]/span/span', // message badge when scrolling down (skool creates a different header when scrolling down for some reason)
+  '//*[@id="__next"]/div/div/div[3]/div/div[1]/div/div/div[1]/button', // "Load ? new posts" button
 ];
 
 // -----------------------------
@@ -26,6 +29,8 @@ const allXpaths = [
 const notifications = [
   '//*[@id="__next"]/div/div/div[1]/div/div[1]/div[3]/div/div[1]/span/span', // notification badge
   '//*[@id="__next"]/div/div/div[1]/div/div[1]/div[3]/div/div[2]/span/span', // message badge
+  '//*[@id="__next"]/div/div/div[2]/div/div/div[3]/div/div[2]/span/span', // notification badge when scrolling down (skool creates a different header when scrolling down for some reason)
+  '//*[@id="__next"]/div/div/div[2]/div/div/div[3]/div/div[1]/span/span' // message badge when scrolling down (skool creates a different header when scrolling down for some reason)
 ];
 
 const tabLinks = [
@@ -40,6 +45,7 @@ const communityFeed = [
   '//*[@id="__next"]/div/div/div[3]/div/div[1]/div/div/div[1]/div[2]', // all posts on the community feed
   '//*[@id="__next"]/div/div/div[3]/div/div[1]/div/div/div[1]/div[3]', // 'previous - next' navigation
   '//*[@id="__next"]/div/div/div[3]/div/div[3]/div', // community sidebar + 30 day leaderboard
+  '//*[@id="__next"]/div/div/div[3]/div/div[1]/div/div/div[1]/button', // "Load ? new posts" button
 ];
 
 const communityFeedHeader = [
@@ -56,6 +62,20 @@ const classroomSection = [
 ];
 
 let elementsToHide = allXpaths;
+let hasScrolled = false;
+
+function handleScroll() {
+  if (!hasScrolled) {
+    hasScrolled = true;
+    // The header has a 300ms transition
+    setTimeout(updateElementsToHide, 250)
+  }
+
+  // In case the user scroll down and then up again without changing settings
+  if(document.documentElement.scrollTop === 0) {
+    hasScrolled = false;
+  }
+}
 
 // fixes issue with hidden classroom content elements
 function fixClassroomSection() {
@@ -105,6 +125,7 @@ function toggleElements(xpathExpressions, shouldHide) {
 }
 
 function updateElementsToHide() {
+  console.log("Updating elements to hide");
   elementsToHide = [];
   browser.storage.sync.get().then((result)=> {
     if (result.hideElements.all) {
@@ -151,3 +172,8 @@ function toggleAndSyncElements() {
 // Retrieve state from storage
 // Because we don't need data, another solution should be used to call the function
 browser.storage.sync.get("hideElements").then(toggleAndSyncElements);
+
+// Check if the user scrolls the site
+// This is needed because the site creates a different header when scrolling down
+// To prevent the Icon in the second header from showing we need to hide it again
+window.addEventListener('scroll', handleScroll);
