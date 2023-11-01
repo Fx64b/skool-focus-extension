@@ -10,6 +10,13 @@ A browser extension that helps you focus while you use the skool.com website.
 
 <br>
 
+## Help me with development
+- Feel free to make a contribution to this extension or to donate
+ 
+<a href="https://www.buymeacoffee.com/fx64b" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/arial-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+
+<br>
+
 ## Features (WIP)
 - [x] Hide Notification Badges
   
