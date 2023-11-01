@@ -125,7 +125,6 @@ function toggleElements(xpathExpressions, shouldHide) {
 }
 
 function updateElementsToHide() {
-  console.log("Updating elements to hide");
   elementsToHide = [];
   browser.storage.sync.get().then((result)=> {
     if (result.hideElements.all) {
