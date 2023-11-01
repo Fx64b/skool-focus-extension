@@ -67,4 +67,8 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById('githubLink').addEventListener('click', function () {
     chrome.tabs.create({ url: 'https://github.com/Fx64b/skool-focus-extension' });
   });
+
+  document.getElementById('bmcLink').addEventListener('click', function () {
+    chrome.tabs.create({ url: 'https://www.buymeacoffee.com/fx64b' });
+  });
 });
