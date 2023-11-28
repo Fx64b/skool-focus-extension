@@ -19,12 +19,14 @@
       .toggle {
         display: flex;
         justify-content: space-between;
+        align-items: center;
         margin-bottom: 10px;
       }
 
       .toggle span {
         font-size: 14px;
         margin-left: 10px;
+        max-width: 150px;
       }
 
       .switch {
@@ -154,6 +156,13 @@
         <span>Community Feed Top</span>
         <label class="switch">
           <input type="checkbox" id="toggleFeedTop" />
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <div class="toggle">
+        <span>Chat, Notifaction and Profile Button</span>
+        <label class="switch">
+          <input type="checkbox" id="toggleChatNotificationProfile" />
           <span class="slider round"></span>
         </label>
       </div>

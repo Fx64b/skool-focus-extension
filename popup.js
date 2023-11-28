@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
     toggleTabLinks: "tabLinks",
     toggleCommunityFeed: "communityFeed",
     toggleFeedTop: "communityFeedHeader",
+    toggleChatNotificationProfile: "chatNotificationProfile",
   };
 
   // Function to update the UI state of toggle buttons

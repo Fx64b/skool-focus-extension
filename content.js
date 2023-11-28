@@ -20,6 +20,9 @@ const allXpaths = [
   '//*[@id="__next"]/div/div/div[2]/div/div/div[3]/div/div[2]/span/span', // notification badge when scrolling down (skool creates a different header when scrolling down for some reason)
   '//*[@id="__next"]/div/div/div[2]/div/div/div[3]/div/div[1]/span/span', // message badge when scrolling down (skool creates a different header when scrolling down for some reason)
   '//*[@id="__next"]/div/div/div[3]/div/div[1]/div/div/div[1]/button', // "Load ? new posts" button
+  '//*[@id="__next"]/div/div/div[3]/div/div/div[2]/div/div/div[1]/div[2]/div', // completion icon
+  '//*[@id="__next"]/div/div/div[1]/div/div[1]/div[3]/div', // All three icons
+  '//*[@id="__next"]/div/div/div[2]/div/div/div[3]/div', // All three icons (header scrolled)
 ];
 
 // -----------------------------
@@ -59,6 +62,12 @@ const classroomSection = [
   '//*[@id="__next"]/div/div/div[3]/div/div/div[1]/div/div[1]', // Title and completion status
   '//*[@id="__next"]/div/div/div[3]/div/div/div[2]/div/div/div[2]', // post content
   '//*[@id="__next"]/div/div/div[3]/div/div/div[1]/div/div[1]/div[2]', // completion status
+  '//*[@id="__next"]/div/div/div[3]/div/div/div[2]/div/div/div[1]/div[2]/div' // completion icon
+];
+
+const chatNotificationProfile = [
+  '//*[@id="__next"]/div/div/div[1]/div/div[1]/div[3]/div', // All three icons (header top)
+  '//*[@id="__next"]/div/div/div[2]/div/div/div[3]/div', // All three icons (header scrolled)
 ];
 
 let elementsToHide = allXpaths;
@@ -143,6 +152,9 @@ function updateElementsToHide() {
       }
       if (result.hideElements.communityFeedHeader) {
         elementsToHide.push(...communityFeedHeader);
+      }
+      if (result.hideElements.chatNotificationProfile) {
+        elementsToHide.push(...chatNotificationProfile);
       }
     }
     toggleElements(allXpaths, false); // Display all elements before hiding
