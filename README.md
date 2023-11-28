@@ -35,6 +35,7 @@ A browser extension that helps you focus while you use the skool.com website.
   - [x] Hide Calendar
   - [x] Hide Members
   - [x] Disable all Notifications
+  - [x] Hide Notification, Chat and Profile Button
   - [ ] Option to force focus mode for 30-90 minutes
   
 <br>
