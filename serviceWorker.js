@@ -1,5 +1,5 @@
 try {
-    importScripts('browser-polyfill.min.js', 'background.js');
+  importScripts("browser-polyfill.min.js", "background.js");
 } catch (e) {
-    console.error(e);
+  console.error(e);
 }
