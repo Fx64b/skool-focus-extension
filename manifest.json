@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Skool Focus",
-  "version": "2.0",
+  "version": "2.0.0",
   "author": "Fx64b",
   "description": "A browser extension that helps you focus while you use the skool.com website.",
   "permissions": ["activeTab", "storage"],
