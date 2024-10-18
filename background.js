@@ -9,7 +9,6 @@ function toggleElementsOnAllTabs() {
   });
 }
 
-// Add listener for browser action click (maybe not needed anymore)
 browser.action.onClicked.addListener(function (tab) {
   toggleElementsOnAllTabs();
 });
@@ -20,7 +19,9 @@ browser.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     // Send a message to all open tabs to toggle elements
     browser.tabs.query({}, function (tabs) {
       for (const tab of tabs) {
-        browser.tabs.sendMessage(tab.id, { hideElements: message.hideElements });
+        browser.tabs.sendMessage(tab.id, {
+          hideElements: message.hideElements,
+        });
       }
     });
   }
