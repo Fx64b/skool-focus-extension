@@ -42,6 +42,12 @@
         margin-bottom: 10px;
       }
 
+      a,
+      a:visited,
+      a:active {
+        color: var(--text-color);
+      }
+
       .toggle {
         display: flex;
         justify-content: space-between;
@@ -104,6 +110,7 @@
         -webkit-transform: translateX(26px);
         -ms-transform: translateX(26px);
         transform: translateX(26px);
+        background-color: var(--toggle-round-enabled);
       }
 
       .slider.round {
@@ -252,7 +259,7 @@
     <div class="footer">
       <a href="#" id="githubLink">Source Code</a>
       <a href="#" id="bmcLink">Donate</a>
-      <p>V2.0.0</p>
+      <p>V2.0.1</p>
     </div>
 
     <div id="overlay">
