@@ -22,7 +22,7 @@ A browser extension that helps you focus while you use the skool.com website.
 
 ## Features (WIP)
 
-- [ ] V2.0 Redesign
+- [x] V2.0 Redesign
 
 **Focus Mode**
 
