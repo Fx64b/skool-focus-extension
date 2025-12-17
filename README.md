@@ -8,13 +8,13 @@ A modern, cross-browser extension that helps you focus while you use the skool.c
 
 ## ✨ What's New in v3.0
 
-**🚀 Complete Modernization**
+**Complete Modernization**
 - Migrated to [WXT](https://wxt.dev/) framework for cross-browser support
 - **Now supports Chrome, Firefox, and Safari** from a single codebase
 - Rewritten in TypeScript for better code quality and maintainability
 - Lightning-fast builds with Vite
 
-**🎨 Redesigned UI/UX**
+**Redesigned UI/UX**
 - Modern, card-based interface
 - Improved visual hierarchy and spacing
 - Smooth animations and transitions
@@ -23,13 +23,13 @@ A modern, cross-browser extension that helps you focus while you use the skool.c
 - More intuitive toggle switches
 - Improved accessibility
 
-## 📦 Installation
+## Installation
 
 ### Chrome Web Store
 https://chrome.google.com/webstore/detail/skool-focus/nchfffdkbhafombnfcpladflclakmdmo
 
 ### Firefox Add-ons
-https://addons.mozilla.org/en-US/firefox/addon/skool-focus/
+*V3 Coming soon*
 
 ### Safari Extension
 *Coming soon*
@@ -41,18 +41,18 @@ https://addons.mozilla.org/en-US/firefox/addon/skool-focus/
 - Shows motivational message to get back to work
 
 **Individual Settings**
-- 🔔 Hide Notifications - Remove notification badges
-- 📑 Hide Tabs - Remove distracting navigation tabs
-- 👥 Hide Community Feed - Remove the community sidebar
-- 👤 Hide Profile Buttons - Remove chat and profile buttons
+- Hide Notifications - Remove notification badges
+- Hide Tabs - Remove distracting navigation tabs
+-  Hide Community Feed - Remove the community sidebar
+-  Hide Profile Buttons - Remove chat and profile buttons
 
 **Additional Features**
-- 🌓 Dark/Light mode toggle
-- 💾 Settings sync across devices
-- ⚡ Fast and lightweight
-- 🔒 Privacy-focused (no data collection)
+-  Dark/Light mode toggle
+-  Settings sync across devices
+-  Fast and lightweight
+-  Privacy-focused (no data collection)
 
-## 🛠️ Development
+## Development
 
 ### Prerequisites
 - Node.js 18+ and npm
@@ -135,7 +135,7 @@ git tag v3.0.0
 git push origin v3.0.0
 ```
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Feel free to:
 - Report bugs
@@ -148,11 +148,11 @@ If you find this extension helpful, consider supporting its development:
 
 <a href="https://www.buymeacoffee.com/fx64b" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/arial-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
-## 📝 License
+## License
 
 GPL-3.0 - See [LICENSE](LICENSE) file for details
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Built with [WXT](https://wxt.dev/) by [aklinker1](https://github.com/aklinker1)
 - Icons from [Heroicons](https://heroicons.com/)
