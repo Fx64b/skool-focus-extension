@@ -1,0 +1,83 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build and create release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build all browsers
+        run: npm run build:all
+
+      - name: Create distribution packages
+        run: npm run zip:all
+
+      - name: List zip files
+        run: |
+          echo "Created zip files:"
+          ls -lh .output/*.zip
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: .output/*.zip
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          body: |
+            ## 🎉 Skool Focus Extension v${{ steps.version.outputs.VERSION }}
+
+            ### 📦 Downloads
+
+            - **Chrome**: Download the `chrome-mv3-*.zip` file
+            - **Firefox**: Download the `firefox-mv2-*.zip` file
+            - **Safari**: Download the `safari-mv2-*.zip` file
+
+            ### 🚀 Installation
+
+            #### Chrome
+            1. Download the Chrome zip file
+            2. Extract the contents
+            3. Go to `chrome://extensions/`
+            4. Enable "Developer mode"
+            5. Click "Load unpacked" and select the extracted folder
+
+            #### Firefox
+            1. Download the Firefox zip file
+            2. Go to `about:debugging#/runtime/this-firefox`
+            3. Click "Load Temporary Add-on"
+            4. Select the zip file
+
+            #### Safari
+            1. Download the Safari zip file
+            2. Follow Safari's extension installation guide
+
+            ### 📋 Full Changelog
+
+            See below for automatically generated release notes.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

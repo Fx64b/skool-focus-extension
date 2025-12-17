@@ -1,0 +1,41 @@
+{
+  "name": "skool-focus-extension",
+  "version": "3.0.0",
+  "description": "A browser extension that helps you focus while you use the skool.com website.",
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "dev:firefox": "wxt -b firefox",
+    "dev:safari": "wxt -b safari",
+    "build": "wxt build",
+    "build:chrome": "wxt build -b chrome",
+    "build:firefox": "wxt build -b firefox",
+    "build:safari": "wxt build -b safari",
+    "build:all": "npm run build:chrome && npm run build:firefox && npm run build:safari",
+    "zip": "wxt zip",
+    "zip:chrome": "wxt zip -b chrome",
+    "zip:firefox": "wxt zip -b firefox",
+    "zip:safari": "wxt zip -b safari",
+    "zip:all": "npm run zip:chrome && npm run zip:firefox && npm run zip:safari",
+    "prepare": "wxt prepare"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Fx64b/skool-focus-extension"
+  },
+  "keywords": [
+    "browser-extension",
+    "chrome-extension",
+    "firefox-addon",
+    "safari-extension",
+    "productivity",
+    "focus",
+    "skool"
+  ],
+  "author": "Fx64b",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "wxt": "^0.20.13"
+  }
+}
