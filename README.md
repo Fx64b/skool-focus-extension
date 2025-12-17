@@ -4,6 +4,7 @@ A modern, cross-browser extension that helps you focus while you use the skool.c
 
 ![Version](https://img.shields.io/badge/version-3.0.0-blue)
 ![License](https://img.shields.io/badge/license-GPL--3.0-green)
+![Build](https://github.com/Fx64b/skool-focus-extension/actions/workflows/build.yml/badge.svg)
 
 ## ✨ What's New in v3.0
 
@@ -109,6 +110,30 @@ The extension is built using:
 - **TypeScript** - Type-safe JavaScript
 - **Vite** - Fast build tool
 - **Vanilla JS** - No heavy frameworks for minimal bundle size
+
+### CI/CD
+
+The project includes GitHub Actions workflows for automated testing and releases:
+
+**Build Workflow** (`.github/workflows/build.yml`)
+- Runs on every push and pull request
+- Tests builds for Chrome, Firefox, and Safari in parallel
+- Verifies all manifest files are generated correctly
+- Uploads build artifacts for inspection
+- Ensures code quality before merging
+
+**Release Workflow** (`.github/workflows/release.yml`)
+- Triggers when you push a version tag (e.g., `v3.0.0`)
+- Builds for all browsers automatically
+- Creates distribution zip files
+- Publishes a GitHub release with all packages
+- Includes installation instructions
+
+To create a release:
+```bash
+git tag v3.0.0
+git push origin v3.0.0
+```
 
 ## 🤝 Contributing
 

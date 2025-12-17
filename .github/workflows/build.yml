@@ -1,0 +1,81 @@
+name: Build Extension
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+
+jobs:
+  build:
+    name: Build for all browsers
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        browser: [chrome, firefox, safari]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build for ${{ matrix.browser }}
+        run: npm run build:${{ matrix.browser }}
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.browser }}
+          path: .output/${{ matrix.browser }}-*
+          retention-days: 7
+
+  build-all:
+    name: Verify all builds succeed
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build all browsers
+        run: npm run build:all
+
+      - name: List build outputs
+        run: |
+          echo "Build outputs:"
+          ls -lh .output/
+
+      - name: Verify Chrome build
+        run: test -f .output/chrome-mv3/manifest.json
+
+      - name: Verify Firefox build
+        run: test -f .output/firefox-mv2/manifest.json
+
+      - name: Verify Safari build
+        run: test -f .output/safari-mv2/manifest.json
+
+      - name: Upload all builds
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-all-browsers
+          path: .output/
+          retention-days: 30
