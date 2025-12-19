@@ -177,13 +177,32 @@ document.addEventListener('DOMContentLoaded', function () {
   disableIfNotOnSkool();
 
   document.getElementById('skoolLink')?.addEventListener('click', function () {
-    browser.tabs.create({ url: 'https://www.skool.com' });
+    // First, try to find an existing skool.com tab
+    browser.tabs.query({}, function (tabs) {
+      const skoolTab = tabs.find((tab) => tab.url?.includes('skool.com'));
+
+      if (skoolTab && skoolTab.id) {
+        // Switch to the existing skool.com tab
+        browser.tabs.update(skoolTab.id, { active: true });
+        // Also focus the window containing that tab
+        if (skoolTab.windowId) {
+          browser.windows.update(skoolTab.windowId, { focused: true });
+        }
+      } else {
+        // No skool.com tab found, create a new one
+        browser.tabs.create({ url: 'https://www.skool.com' });
+      }
+    });
   });
 
   document.getElementById('githubLink')?.addEventListener('click', function () {
     browser.tabs.create({
       url: 'https://github.com/Fx64b/skool-focus-extension',
     });
+  });
+
+  document.getElementById('skoolVideosLink')?.addEventListener('click', function () {
+    browser.tabs.create({ url: 'https://skool.fx64b.dev' });
   });
 
   document.getElementById('bmcLink')?.addEventListener('click', function () {
