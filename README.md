@@ -6,7 +6,7 @@ A modern, cross-browser extension that helps you focus while you use the skool.c
 ![License](https://img.shields.io/badge/license-GPL--3.0-green)
 ![Build](https://github.com/Fx64b/skool-focus-extension/actions/workflows/build.yml/badge.svg)
 
-## ✨ What's New in v3.0
+## What's New in v3.0
 
 **Complete Modernization**
 - Migrated to [WXT](https://wxt.dev/) framework for cross-browser support
@@ -34,7 +34,7 @@ https://chrome.google.com/webstore/detail/skool-focus/nchfffdkbhafombnfcpladflcl
 ### Safari Extension
 *Coming soon*
 
-## 🎯 Features
+## Features
 
 **Focus Mode**
 - One-click toggle to enable all focus features at once
