@@ -1,5 +1,19 @@
 import './style.css';
 
+/**
+ * Popup logic.
+ *
+ * Every extension API call here is promise based. Chrome supports both styles,
+ * but Firefox's `browser` namespace ignores callbacks, so the old callback code
+ * silently did nothing there.
+ *
+ * Settings are written to `browser.storage.sync` only. The content script picks
+ * them up through `browser.storage.onChanged`, so the popup does not have to
+ * message the tabs.
+ */
+
+const SKOOL_URL_PATTERN = '*://*.skool.com/*';
+
 document.addEventListener('DOMContentLoaded', function () {
   const toggleButtons = {
     toggleAll: 'all',
@@ -7,39 +21,43 @@ document.addEventListener('DOMContentLoaded', function () {
     toggleTabLinks: 'tabLinks',
     toggleCommunityFeed: 'communityFeed',
     toggleChatNotificationProfile: 'chatNotificationProfile',
-  };
+  } as const;
 
-  const toggleAllButton = document.getElementById('toggleAll') as HTMLInputElement;
+  type ButtonId = keyof typeof toggleButtons;
+
+  const buttonIds = Object.keys(toggleButtons) as ButtonId[];
+
+  const toggleAllButton = document.getElementById('toggleAll') as HTMLInputElement | null;
+
+  function getHideElements(): Promise<Record<string, boolean>> {
+    return browser.storage.sync
+      .get('hideElements')
+      .then((data) => (data.hideElements ?? {}) as Record<string, boolean>);
+  }
 
   // Function to update the UI state of toggle buttons
   function updateToggleButtonState() {
-    browser.storage.sync.get('hideElements', function (data) {
-      const currentHiddenStatus = data.hideElements || {};
-
-      Object.keys(toggleButtons).forEach((buttonId) => {
-        const section = toggleButtons[buttonId as keyof typeof toggleButtons];
-        const button = document.getElementById(buttonId) as HTMLInputElement;
+    return getHideElements().then((currentHiddenStatus) => {
+      buttonIds.forEach((buttonId) => {
+        const section = toggleButtons[buttonId];
+        const button = document.getElementById(buttonId) as HTMLInputElement | null;
 
         if (button) {
           // Update the UI state based on stored value
-          button.checked = currentHiddenStatus[section];
+          button.checked = Boolean(currentHiddenStatus[section]);
         }
       });
 
       // Update the state of individual buttons based on focus mode
-      if (currentHiddenStatus.all) {
-        disableIndividualSettings(true);
-      } else {
-        disableIndividualSettings(false);
-      }
+      disableIndividualSettings(Boolean(currentHiddenStatus.all));
     });
   }
 
   // Function to disable/enable individual settings buttons
   function disableIndividualSettings(disable: boolean) {
-    Object.keys(toggleButtons).forEach((buttonId) => {
+    buttonIds.forEach((buttonId) => {
       if (buttonId !== 'toggleAll') {
-        const button = document.getElementById(buttonId) as HTMLInputElement;
+        const button = document.getElementById(buttonId) as HTMLInputElement | null;
         if (button) {
           button.disabled = disable;
         }
@@ -49,78 +67,63 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Function to handle focus mode toggle
   if (toggleAllButton) {
-    toggleAllButton.addEventListener('click', function () {
-      browser.storage.sync.get('hideElements', function (data) {
-        const currentHiddenStatus = data.hideElements || {};
-        const isFocusModeEnabled = !currentHiddenStatus.all;
+    toggleAllButton.addEventListener('change', function () {
+      void getHideElements().then((currentHiddenStatus) => {
+        const isFocusModeEnabled = toggleAllButton.checked;
 
         currentHiddenStatus.all = isFocusModeEnabled;
-        Object.keys(toggleButtons).forEach((buttonId) => {
+        buttonIds.forEach((buttonId) => {
           if (buttonId !== 'toggleAll') {
-            currentHiddenStatus[toggleButtons[buttonId as keyof typeof toggleButtons]] =
-              isFocusModeEnabled;
+            currentHiddenStatus[toggleButtons[buttonId]] = isFocusModeEnabled;
           }
         });
 
-        browser.storage.sync.set({ hideElements: currentHiddenStatus }, function () {
-          updateToggleButtonState();
-
-          // Send a message to content scripts to update their state
-          browser.tabs.query({}, function (tabs) {
-            tabs.forEach((tab) => {
-              if (tab.favIconUrl && tab.url?.includes('skool.com')) {
-                browser.tabs.sendMessage(tab.id!, { message: 'tab_update' });
-              }
-            });
-          });
-        });
+        return browser.storage.sync
+          .set({ hideElements: currentHiddenStatus })
+          .then(updateToggleButtonState);
       });
     });
   }
 
   // Handle individual setting toggles
-  Object.keys(toggleButtons).forEach((buttonId) => {
-    if (buttonId !== 'toggleAll') {
-      const button = document.getElementById(buttonId) as HTMLInputElement;
-      if (button) {
-        button.addEventListener('click', function () {
-          const section = toggleButtons[buttonId as keyof typeof toggleButtons];
-          browser.storage.sync.get('hideElements', function (data) {
-            const currentHiddenStatus = data.hideElements || {};
-            currentHiddenStatus[section] = !currentHiddenStatus[section];
-            browser.storage.sync.set({ hideElements: currentHiddenStatus }, function () {
-              // Send a message to content scripts to update their state
-              browser.tabs.query({}, function (tabs) {
-                tabs.forEach((tab) => {
-                  if (tab.favIconUrl && tab.url?.includes('skool.com')) {
-                    browser.tabs.sendMessage(tab.id!, { message: 'tab_update' });
-                  }
-                });
-              });
-            });
-          });
-        });
-      }
+  buttonIds.forEach((buttonId) => {
+    if (buttonId === 'toggleAll') {
+      return;
     }
+
+    const button = document.getElementById(buttonId) as HTMLInputElement | null;
+    if (!button) {
+      return;
+    }
+
+    button.addEventListener('change', function () {
+      const section = toggleButtons[buttonId];
+      void getHideElements().then((currentHiddenStatus) => {
+        currentHiddenStatus[section] = button.checked;
+        return browser.storage.sync.set({ hideElements: currentHiddenStatus });
+      });
+    });
   });
 
   // Function to disable buttons if not on skool.com
   function disableIfNotOnSkool() {
-    browser.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      const currentTab = tabs[0];
-      if (!currentTab.url?.includes('skool.com')) {
-        Object.keys(toggleButtons).forEach((buttonId) => {
-          const button = document.getElementById(buttonId) as HTMLInputElement;
+    return browser.tabs
+      .query({ active: true, currentWindow: true })
+      .then((tabs) => {
+        const currentTab = tabs[0];
+        if (currentTab?.url?.includes('skool.com')) {
+          return;
+        }
+
+        buttonIds.forEach((buttonId) => {
+          const button = document.getElementById(buttonId) as HTMLInputElement | null;
           if (button) {
             button.disabled = true;
           }
         });
-        const overlay = document.getElementById('overlay');
-        if (overlay) {
-          overlay.classList.add('visible');
-        }
-      }
-    });
+
+        document.getElementById('overlay')?.classList.add('visible');
+      });
   }
 
   const themeToggle = document.getElementById('theme-toggle');
@@ -149,63 +152,59 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function saveThemePreference(theme: string) {
-    browser.storage.sync.set({ theme: theme }, function () {
-      console.log('Theme preference saved:', theme);
-    });
+    return browser.storage.sync.set({ theme: theme });
   }
 
   if (themeToggle) {
     themeToggle.addEventListener('click', function () {
-      if (document.body.classList.contains('light-mode')) {
-        applyTheme('dark');
-        saveThemePreference('dark');
-      } else {
-        applyTheme('light');
-        saveThemePreference('light');
-      }
+      const nextTheme = document.body.classList.contains('light-mode') ? 'dark' : 'light';
+      applyTheme(nextTheme);
+      void saveThemePreference(nextTheme);
     });
   }
 
-  browser.storage.sync.get('theme', function (data) {
-    const storedTheme = data.theme || 'light';
-    applyTheme(storedTheme);
+  void browser.storage.sync.get('theme').then((data) => {
+    applyTheme((data.theme as string) || 'light');
   });
 
   toggleIcons();
 
-  updateToggleButtonState();
-  disableIfNotOnSkool();
+  void updateToggleButtonState();
+  void disableIfNotOnSkool();
+
+  function openInNewTab(url: string) {
+    void browser.tabs.create({ url });
+  }
 
   document.getElementById('skoolLink')?.addEventListener('click', function () {
     // First, try to find an existing skool.com tab
-    browser.tabs.query({}, function (tabs) {
-      const skoolTab = tabs.find((tab) => tab.url?.includes('skool.com'));
+    void browser.tabs.query({ url: SKOOL_URL_PATTERN }).then((tabs) => {
+      const skoolTab = tabs[0];
 
-      if (skoolTab && skoolTab.id) {
-        // Switch to the existing skool.com tab
-        browser.tabs.update(skoolTab.id, { active: true });
-        // Also focus the window containing that tab
-        if (skoolTab.windowId) {
-          browser.windows.update(skoolTab.windowId, { focused: true });
-        }
-      } else {
+      if (!skoolTab?.id) {
         // No skool.com tab found, create a new one
-        browser.tabs.create({ url: 'https://www.skool.com' });
+        openInNewTab('https://www.skool.com');
+        return;
+      }
+
+      // Switch to the existing skool.com tab
+      void browser.tabs.update(skoolTab.id, { active: true });
+      // Also focus the window containing that tab
+      if (skoolTab.windowId != null) {
+        void browser.windows.update(skoolTab.windowId, { focused: true });
       }
     });
   });
 
   document.getElementById('githubLink')?.addEventListener('click', function () {
-    browser.tabs.create({
-      url: 'https://github.com/Fx64b/skool-focus-extension',
-    });
+    openInNewTab('https://github.com/Fx64b/skool-focus-extension');
   });
 
   document.getElementById('skoolVideosLink')?.addEventListener('click', function () {
-    browser.tabs.create({ url: 'https://skool.fx64b.dev' });
+    openInNewTab('https://skool.fx64b.dev');
   });
 
   document.getElementById('bmcLink')?.addEventListener('click', function () {
-    browser.tabs.create({ url: 'https://www.buymeacoffee.com/fx64b' });
+    openInNewTab('https://www.buymeacoffee.com/fx64b');
   });
 });

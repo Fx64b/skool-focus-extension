@@ -16,30 +16,30 @@ This is a cross-browser extension that helps users focus while using skool.com. 
 
 ### Setup
 ```bash
-npm install
+pnpm install
 ```
 
 ### Development (Hot Reload)
 ```bash
-npm run dev              # Chrome (default)
-npm run dev:firefox      # Firefox
-npm run dev:safari       # Safari
+pnpm run dev              # Chrome (default)
+pnpm run dev:firefox      # Firefox
+pnpm run dev:safari       # Safari
 ```
 
 ### Building
 ```bash
-npm run build:all        # Build for all browsers
-npm run build:chrome     # Chrome only
-npm run build:firefox    # Firefox only
-npm run build:safari     # Safari only
+pnpm run build:all        # Build for all browsers
+pnpm run build:chrome     # Chrome only
+pnpm run build:firefox    # Firefox only
+pnpm run build:safari     # Safari only
 ```
 
 ### Distribution
 ```bash
-npm run zip:all          # Create zip files for all browsers
-npm run zip:chrome       # Chrome zip only
-npm run zip:firefox      # Firefox zip only
-npm run zip:safari       # Safari zip only
+pnpm run zip:all          # Create zip files for all browsers
+pnpm run zip:chrome       # Chrome zip only
+pnpm run zip:firefox      # Firefox zip only
+pnpm run zip:safari       # Safari zip only
 ```
 
 **Build outputs** are located in `.output/`:
@@ -54,17 +54,20 @@ npm run zip:safari       # Safari zip only
 The extension has three main entry points defined in `entrypoints/`:
 
 1. **`background.ts`** - Background service worker
-   - Handles browser action clicks
-   - Coordinates messaging between popup and content scripts
-   - Triggers element toggling across all open skool.com tabs
-   - Listens for tab updates to re-apply settings
+   - Seeds default `hideElements` values on install/update
+   - Nothing else: the content script observes storage directly, so no
+     tab broadcast is needed
 
-2. **`content.ts`** - Content script (runs on skool.com pages)
+2. **`content.ts`** - Content script (runs on skool.com pages, at `document_start`)
    - Defines CSS selectors for elements to hide (notifications, tabs, community feed, profile buttons)
-   - Reads hide settings from `browser.storage.sync`
-   - Toggles element visibility using opacity and pointer-events CSS
+   - Injects one stylesheet whose rules are all guarded by a `data-skool-focus`
+     attribute on `<html>`
+   - Reads hide settings from `browser.storage.sync` and writes the active
+     feature keys into that attribute
+   - Subscribes to `browser.storage.onChanged`, so popup changes apply instantly
    - Shows "Get Back to Work Right Now!" focus text when focus mode is enabled
-   - Re-applies settings on page load and when receiving messages from background/popup
+   - Re-checks the focus text on client-side navigation via WXT's
+     `wxt:locationchange` event
 
 3. **`popup/`** - Extension popup UI
    - `main.ts`: Popup logic for toggle buttons and theme switching
@@ -81,7 +84,8 @@ browser.storage.sync: {
     notifications: boolean,
     tabLinks: boolean,
     communityFeed: boolean,
-    chatNotificationProfile: boolean
+    chatNotificationProfile: boolean,
+    switchCommunity: boolean           // Focus mode only, no popup toggle
   },
   theme: 'light' | 'dark'
 }
@@ -89,13 +93,22 @@ browser.storage.sync: {
 
 **Message Flow:**
 1. User toggles setting in popup → saves to `browser.storage.sync`
-2. Popup sends `{ message: 'tab_update' }` to all skool.com tabs
-3. Content script receives message → reads storage → updates DOM
+2. Content script's `browser.storage.onChanged` listener fires → updates the
+   `data-skool-focus` attribute on `<html>`
+
+There is deliberately **no** `tabs.sendMessage` broadcast. The old one filtered
+tabs on `tab.url`/`tab.favIconUrl`, which are `undefined` without the `tabs`
+permission or a host permission, so it never reached any tab under MV3.
 
 **Element Hiding Strategy:**
-- Elements are hidden using CSS `opacity: 0` and `pointer-events: none`
+- A single `<style>` element is injected at `document_start`
+- Each rule is scoped to `html[data-skool-focus~="<featureKey>"]`, so toggling a
+  feature is one attribute write and no DOM walk
+- Elements are hidden using `opacity: 0 !important` and
+  `pointer-events: none !important`
 - CSS selectors target dynamically-generated class names (e.g., `[class*="styled__UnreadNotificationBubble-"]`)
-- All elements are first shown (opacity: 1), then selectively hidden based on settings
+- `!important` in a stylesheet is required: skool is a React SPA that re-renders
+  constantly and would wipe inline styles set on its own nodes
 - This approach avoids removing elements from the DOM entirely
 
 ### WXT Configuration
@@ -104,7 +117,16 @@ browser.storage.sync: {
 - Extension manifest (name, version, description)
 - Permissions: `activeTab`, `storage`
 - Icons in `public/images/`
-- `extensionApi: 'chrome'` - Uses Chrome extension API with WXT's polyfill for cross-browser compatibility
+- `host_permissions: ['*://*.skool.com/*']` - required for `tabs.query` to
+  return tab URLs; content script `matches` do **not** grant host permissions
+  under MV3. WXT folds this into `permissions` for the MV2 builds.
+
+WXT 0.20 has no `extensionApi` option and ships **no** webextension-polyfill:
+`browser` is just `globalThis.browser ?? globalThis.chrome`. Two consequences:
+- Always use the **promise** form of extension APIs. Firefox's native `browser`
+  ignores callbacks, so callback-style code silently does nothing there.
+- Do not use MV3-only namespaces such as `browser.action` in shared code; it is
+  `undefined` in the MV2 builds and throws on background startup.
 
 ### Browser Compatibility
 
@@ -117,7 +139,12 @@ WXT automatically handles cross-browser differences:
 
 ### CSS Selectors for skool.com
 
-The content script targets skool.com's styled-components class names using attribute selectors:
+`elementsSelectors` in `entrypoints/content.ts` maps each feature key to a
+**list** of candidate selectors. A selector that matches nothing is harmless, so
+old and new markup can be supported side by side during a skool redesign. Put
+stable selectors (ARIA roles, hrefs, test ids) first and class-name ones last.
+
+The current selectors target skool.com's styled-components class names using attribute selectors:
 - `[class*="styled__UnreadNotificationBubble-"]` - Notification badges
 - `[class*="styled__NavButtonWrapper-"]` - Chat/profile buttons
 - `[class*="styled__SwitcherContent-"]` - Community switcher
@@ -131,6 +158,7 @@ The content script targets skool.com's styled-components class names using attri
 When "Focus Mode" is enabled (`hideElements.all = true`):
 - All individual hide settings are set to `true`
 - Individual toggle buttons are disabled in the popup
+- The community switcher (`switchCommunity`) is hidden too; it has no popup toggle
 - A large "Get Back to Work Right Now!" message appears on skool.com pages (except `/classroom` pages)
 - The focus text is positioned fixed at center with `translate(-50%, -50%)`
 
@@ -181,7 +209,7 @@ git push origin v3.0.0
 If skool.com changes their UI and selectors break:
 1. Inspect the new elements in DevTools
 2. Update selectors in `elementsSelectors` in `entrypoints/content.ts`
-3. Test in dev mode: `npm run dev`
+3. Test in dev mode: `pnpm run dev`
 
 ### Modifying the Popup UI
 
@@ -194,13 +222,13 @@ All popup UI is in `entrypoints/popup/`:
 
 ```bash
 # Terminal 1
-npm run dev:chrome
+pnpm run dev
 
 # Terminal 2
-npm run dev:firefox
+pnpm run dev:firefox
 
 # Terminal 3
-npm run dev:safari
+pnpm run dev:safari
 ```
 
 Load the unpacked extension from `.output/chrome-mv3/`, `.output/firefox-mv2/`, or `.output/safari-mv2/` respectively.
@@ -216,5 +244,6 @@ Load the unpacked extension from `.output/chrome-mv3/`, `.output/firefox-mv2/`, 
 ## Permissions
 
 The extension requires:
-- `activeTab` - To inject content scripts into skool.com tabs
+- `activeTab` - Lets the popup read the active tab's URL for the "not on skool.com" overlay
 - `storage` - To persist user settings across browser sessions with `browser.storage.sync`
+- `host_permissions: *://*.skool.com/*` - Lets `tabs.query` return skool tab URLs

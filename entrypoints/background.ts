@@ -1,37 +1,28 @@
+/**
+ * Background script.
+ *
+ * The content script now reads `browser.storage.onChanged` directly, so the
+ * background script no longer has to broadcast to every tab. That old broadcast
+ * could never work anyway: it filtered tabs on `tab.url` and `tab.favIconUrl`,
+ * and both are `undefined` unless the extension holds the `tabs` permission or
+ * a host permission for that tab.
+ */
+
+const DEFAULT_HIDE_ELEMENTS = {
+  all: false,
+  notifications: false,
+  tabLinks: false,
+  communityFeed: false,
+  chatNotificationProfile: false,
+  switchCommunity: false,
+};
+
 export default defineBackground(() => {
-  // Toggle elements on all open tabs
-  function toggleElementsOnAllTabs() {
-    browser.tabs.query({}, function (tabs) {
-      for (const tab of tabs) {
-        if (tab.favIconUrl && tab.url?.includes('skool.com')) {
-          browser.tabs.sendMessage(tab.id!, { message: 'toggle_element' });
-        }
-      }
-    });
-  }
-
-  browser.action.onClicked.addListener(function (tab) {
-    toggleElementsOnAllTabs();
-  });
-
-  // Add a listener for the message from the content script to toggle elements.
-  browser.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-    if (message.message === 'toggle_element') {
-      // Send a message to all open tabs to toggle elements
-      browser.tabs.query({}, function (tabs) {
-        for (const tab of tabs) {
-          browser.tabs.sendMessage(tab.id!, {
-            hideElements: message.hideElements,
-          });
-        }
+  browser.runtime.onInstalled.addListener(() => {
+    void browser.storage.sync.get('hideElements').then((result) => {
+      browser.storage.sync.set({
+        hideElements: { ...DEFAULT_HIDE_ELEMENTS, ...(result.hideElements ?? {}) },
       });
-    }
-  });
-
-  // Add a listener for tab update
-  browser.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-    if (tab.favIconUrl && tab.url?.includes('skool.com')) {
-      browser.tabs.sendMessage(tabId, { message: 'tab_update' });
-    }
+    });
   });
 });
