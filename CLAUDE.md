@@ -140,18 +140,38 @@ WXT automatically handles cross-browser differences:
 ### CSS Selectors for skool.com
 
 `elementsSelectors` in `entrypoints/content.ts` maps each feature key to a
-**list** of candidate selectors. A selector that matches nothing is harmless, so
-old and new markup can be supported side by side during a skool redesign. Put
-stable selectors (ARIA roles, hrefs, test ids) first and class-name ones last.
+**list** of candidate selectors. Each one is emitted as its own CSS rule, so a
+selector that matches nothing — or that an older browser does not support —
+never disables the others. A selector list joined with commas would be dropped
+whole by the CSS parser as soon as one part is invalid.
 
-The current selectors target skool.com's styled-components class names using attribute selectors:
-- `[class*="styled__UnreadNotificationBubble-"]` - Notification badges
-- `[class*="styled__NavButtonWrapper-"]` - Chat/profile buttons
-- `[class*="styled__SwitcherContent-"]` - Community switcher
-- `[class*="styled__HeaderLinks-"] [class*="styled__ChildrenLink-"]:not(a[href*="/classroom"])` - Tab links (except classroom)
-- `[class*="styled__ContentWrapper-"] [class*="styled__AsideLayoutWrapper-"]` - Community feed sidebar
+**Skool migrated to styled-components v6.** Class names went from
+`styled__ComponentName-hash` to an opaque `sc-<hash>-<index>`; the component
+name is gone. Every `[class*="styled__..."]` selector now matches nothing, so
+the v5 selectors are kept only as a fallback. The `sc-` component id survives
+deploys until its source file is edited; the second class (`qvVOK`, `ksuJUe`)
+is the style hash and changes on every CSS edit — never target it.
 
-**Note:** These selectors are fragile and may break if skool.com changes their CSS-in-JS class naming. When fixing selector issues, use browser DevTools to inspect the current class names.
+Prefer selectors that do not depend on a hash at all. The current stable hooks:
+
+| Feature | Stable selector | Class fallback |
+| --- | --- | --- |
+| `notifications` | none available | `.sc-8bc0da1b-0` (shared Badge) |
+| `chatNotificationProfile` | `button[aria-label="Open chats"]`, `button:has(> div > svg[viewBox="0 0 30 40"])` (bell), `button:has(> span > div > span[title] > img)` (avatar) | `.sc-ec7c44aa-9 > *` |
+| `switchCommunity` | `button:has(> div > svg[viewBox="0 0 12 20"])` | `.sc-91437f7d-4` |
+| `tabLinks` | `div:has(> a[href$="/-/members"]):has(> a[href$="/about"]) > a:not([href*="/classroom"])` | `.sc-ec7c44aa-11 > a:not(...)` |
+| `communityFeed` | none available | `.sc-5cd66e93-3` |
+
+The `tabLinks` selector uses the fact that the tab bar is the only element with
+both a Members and an About link as **direct** children — the sidebar has a
+Members link but no About link, so it is not caught.
+
+SVG `viewBox` values work well as hooks: icon geometry rarely changes, and each
+one is unique in the header.
+
+**Note:** skool has no `data-testid` on any of these elements, so there is no
+fully stable hook for the badges or the sidebar. When they break, open
+skool.com with DevTools and inspect the element.
 
 ### Focus Mode Behavior
 

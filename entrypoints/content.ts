@@ -18,22 +18,55 @@ type FeatureKey =
 /**
  * CSS selectors for the elements to hide, one list per feature.
  *
- * Skool uses styled-components, so the class names carry a generated hash
- * suffix and can change with any deploy. Each feature therefore holds several
- * candidate selectors: stable ones first (ARIA roles, hrefs, test ids), the
- * fragile class-name ones last. A selector that matches nothing is harmless, so
- * old and new markup can be supported at the same time.
+ * Skool moved from styled-components v5 to v6, which renamed every class from
+ * `styled__ComponentName-hash` to an opaque `sc-<hash>-<index>`. The name of
+ * the component is gone, so the only stable hooks left in the markup are ARIA
+ * labels, hrefs and SVG `viewBox` geometry. Each feature therefore holds
+ * several candidate selectors: the stable ones first, the class-name ones last.
  *
- * To update these, open skool.com with DevTools and inspect the element.
+ * A selector that matches nothing is harmless, and each one is emitted as its
+ * own CSS rule, so one dead or unsupported selector never disables the others.
+ *
+ * To refresh these, open skool.com with DevTools and inspect the element.
  */
 const elementsSelectors: Record<FeatureKey, string[]> = {
-  notifications: ['[class*="styled__UnreadNotificationBubble-"]'],
-  chatNotificationProfile: ['[class*="styled__NavButtonWrapper-"]'],
-  switchCommunity: ['[class*="styled__SwitcherContent-"]'],
+  // The unread count bubbles on the chat and notification buttons.
+  notifications: [
+    // Shared Badge component. Used by both bubbles and nothing else.
+    '.sc-8bc0da1b-0',
+    // styled-components v5 markup.
+    '[class*="styled__UnreadNotificationBubble-"]',
+  ],
+
+  // Chat, notification and profile buttons at the top right.
+  chatNotificationProfile: [
+    // The whole button group, badges included.
+    '.sc-ec7c44aa-9 > *',
+    // Per-button fallbacks, keyed on ARIA and icon geometry.
+    'button[aria-label="Open chats"]',
+    'button:has(> div > svg[viewBox="0 0 30 40"])',
+    'button:has(> span > div > span[title] > img)',
+    '[class*="styled__NavButtonWrapper-"]',
+  ],
+
+  // The chevron button that opens the community switcher.
+  switchCommunity: [
+    'button:has(> div > svg[viewBox="0 0 12 20"])',
+    '.sc-91437f7d-4',
+    '[class*="styled__SwitcherContent-"]',
+  ],
+
+  // Header tabs, except Classroom. The tab bar is the only element that has
+  // both a Members and an About link as direct children.
   tabLinks: [
+    'div:has(> a[href$="/-/members"]):has(> a[href$="/about"]) > a:not([href*="/classroom"])',
+    '.sc-ec7c44aa-11 > a:not([href*="/classroom"])',
     '[class*="styled__HeaderLinks-"] [class*="styled__ChildrenLink-"]:not(a[href*="/classroom"])',
   ],
+
+  // Right sidebar: group card and leaderboard.
   communityFeed: [
+    '.sc-5cd66e93-3',
     '[class*="styled__ContentWrapper-"] [class*="styled__AsideLayoutWrapper-"]',
   ],
 };
@@ -53,14 +86,24 @@ export default defineContentScript({
     /**
      * Builds the stylesheet once. Every rule is guarded by the attribute on
      * <html>, so toggling a feature is a single attribute write.
+     *
+     * Each candidate selector gets its own rule. A selector list is dropped
+     * whole by the CSS parser as soon as one of its parts is invalid or
+     * unsupported, which would take the working selectors down with the
+     * `:has()` ones on an older browser.
      */
     function buildStyleSheet(): string {
-      const rules = FEATURE_KEYS.map((key) => {
-        const selector = elementsSelectors[key]
-          .map((part) => `html[${ROOT_ATTRIBUTE}~="${key}"] ${part}`)
-          .join(',\n');
+      const rules: string[] = [];
 
-        return `${selector} {\n  opacity: 0 !important;\n  pointer-events: none !important;\n}`;
+      FEATURE_KEYS.forEach((key) => {
+        elementsSelectors[key].forEach((part) => {
+          rules.push(
+            `html[${ROOT_ATTRIBUTE}~="${key}"] ${part} {\n` +
+              '  opacity: 0 !important;\n' +
+              '  pointer-events: none !important;\n' +
+              '}'
+          );
+        });
       });
 
       rules.push(
