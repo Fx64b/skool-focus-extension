@@ -64,9 +64,18 @@ const elementsSelectors: Record<FeatureKey, string[]> = {
     '[class*="styled__HeaderLinks-"] [class*="styled__ChildrenLink-"]:not(a[href*="/classroom"])',
   ],
 
-  // Right sidebar: group card and leaderboard.
+  // The community feed: posts, the right sidebar and the header search bar.
   communityFeed: [
+    // Feed column: composer, category chips and posts. Only rendered on the
+    // community page; Members and About share the layout but not this column.
+    // An opened post is portaled outside it, so it stays readable.
+    '.sc-4ec28781-13',
+    // Right sidebar: group card and leaderboard.
     '.sc-5cd66e93-3',
+    // Header search bar. Its placeholder is "Search", or "Search members" on
+    // the Members page. No other form on skool has one.
+    'form:has(input[placeholder^="Search"])',
+    '.sc-ec7c44aa-6',
     '[class*="styled__ContentWrapper-"] [class*="styled__AsideLayoutWrapper-"]',
   ],
 };

@@ -37,9 +37,15 @@
   box-sizing: border-box;
 }
 
+html,
 body {
-  width: 380px;
-  min-height: 500px;
+  /* Chrome caps popups at 600px tall. Everything is sized to fit well under
+     that, so the popup never needs a scrollbar. */
+  overflow: hidden;
+}
+
+body {
+  width: 360px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
   background-color: var(--bg-primary);
   color: var(--text-primary);
@@ -55,7 +61,7 @@ body {
 /* Header */
 .header {
   background: var(--bg-primary);
-  padding: 20px;
+  padding: 14px 16px;
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -68,17 +74,17 @@ body {
 .logo-section {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .logo-section img {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 8px;
 }
 
 h1 {
-  font-size: 24px;
+  font-size: 19px;
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.5px;
@@ -87,9 +93,9 @@ h1 {
 .theme-toggle {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
-  width: 42px;
-  height: 42px;
+  border-radius: 10px;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -107,8 +113,8 @@ h1 {
 }
 
 .theme-icon {
-  width: 24px;
-  height: 24px;
+  width: 18px;
+  height: 18px;
   color: var(--text-primary);
   display: none;
 }
@@ -120,18 +126,17 @@ h1 {
 /* Main Content */
 .main-content {
   flex: 1;
-  padding: 24px 20px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  overflow-y: auto;
+  gap: 12px;
 }
 
 /* Focus Mode Card */
 .focus-mode-card {
   background: var(--bg-secondary);
-  border-radius: 16px;
-  padding: 20px;
+  border-radius: 14px;
+  padding: 16px;
   border: 2px solid var(--border-color);
   box-shadow: var(--shadow-sm);
   transition: all 0.3s ease;
@@ -142,6 +147,12 @@ h1 {
   box-shadow: var(--shadow-md);
 }
 
+/* Highlight the card while focus mode is on. */
+.focus-mode-card:has(input:checked) {
+  border-color: var(--accent-primary);
+  background: color-mix(in srgb, var(--accent-primary) 14%, var(--bg-secondary));
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -150,10 +161,10 @@ h1 {
 }
 
 .card-title-group h2 {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .card-description {
@@ -164,34 +175,40 @@ h1 {
 /* Settings Card */
 .settings-card {
   background: var(--bg-secondary);
-  border-radius: 16px;
-  padding: 20px;
+  border-radius: 14px;
+  padding: 14px 8px 8px;
   border: 2px solid var(--border-color);
   box-shadow: var(--shadow-sm);
 }
 
 .settings-card h3 {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 16px;
+  margin: 0 8px 6px;
 }
 
 .settings-list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .setting-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 12px;
-  border-radius: 12px;
+  gap: 12px;
+  padding: 9px 8px;
+  border-radius: 10px;
   transition: all 0.2s ease;
+}
+
+/* Dim the rows that focus mode overrides. */
+.setting-item:has(input:disabled) .setting-text {
+  opacity: 0.55;
 }
 
 .setting-item:hover {
@@ -207,8 +224,20 @@ h1 {
 .setting-icon {
   width: 20px;
   height: 20px;
+  flex-shrink: 0;
   color: var(--text-secondary);
   transition: color 0.2s ease;
+}
+
+.setting-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.setting-hint {
+  font-size: 12px;
+  color: var(--text-tertiary);
 }
 
 .setting-item:hover .setting-icon {
@@ -216,7 +245,7 @@ h1 {
 }
 
 .setting-label {
-  font-size: 15px;
+  font-size: 14px;
   color: var(--text-primary);
   font-weight: 500;
 }
@@ -225,8 +254,8 @@ h1 {
 .toggle-switch {
   position: relative;
   display: inline-block;
-  width: 52px;
-  height: 28px;
+  width: 44px;
+  height: 24px;
   flex-shrink: 0;
 }
 
@@ -252,8 +281,8 @@ h1 {
 .toggle-slider:before {
   position: absolute;
   content: '';
-  height: 20px;
-  width: 20px;
+  height: 16px;
+  width: 16px;
   left: 2px;
   bottom: 2px;
   background-color: white;
@@ -268,7 +297,7 @@ input:checked + .toggle-slider {
 }
 
 input:checked + .toggle-slider:before {
-  transform: translateX(24px);
+  transform: translateX(20px);
 }
 
 input:disabled + .toggle-slider {
@@ -283,7 +312,7 @@ input:disabled + .toggle-slider {
 /* Footer */
 .footer {
   background: var(--bg-secondary);
-  padding: 16px 20px;
+  padding: 8px 12px;
   border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
@@ -291,14 +320,13 @@ input:disabled + .toggle-slider {
 }
 
 .footer-content {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  width: 100%;
 }
 
 .footer-links {
   display: flex;
-  gap: 16px;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 .footer-link {
@@ -378,24 +406,6 @@ input:disabled + .toggle-slider {
 .overlay a:hover {
   color: #93c5fd;
   text-decoration: underline;
-}
-
-/* Scrollbar */
-.main-content::-webkit-scrollbar {
-  width: 6px;
-}
-
-.main-content::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.main-content::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 3px;
-}
-
-.main-content::-webkit-scrollbar-thumb:hover {
-  background: var(--text-tertiary);
 }
 
 /* Animations */

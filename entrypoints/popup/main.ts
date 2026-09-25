@@ -200,10 +200,6 @@ document.addEventListener('DOMContentLoaded', function () {
     openInNewTab('https://github.com/Fx64b/skool-focus-extension');
   });
 
-  document.getElementById('skoolVideosLink')?.addEventListener('click', function () {
-    openInNewTab('https://skool.fx64b.dev');
-  });
-
   document.getElementById('bmcLink')?.addEventListener('click', function () {
     openInNewTab('https://www.buymeacoffee.com/fx64b');
   });

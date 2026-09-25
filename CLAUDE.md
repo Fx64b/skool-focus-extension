@@ -160,7 +160,7 @@ Prefer selectors that do not depend on a hash at all. The current stable hooks:
 | `chatNotificationProfile` | `button[aria-label="Open chats"]`, `button:has(> div > svg[viewBox="0 0 30 40"])` (bell), `button:has(> span > div > span[title] > img)` (avatar) | `.sc-ec7c44aa-9 > *` |
 | `switchCommunity` | `button:has(> div > svg[viewBox="0 0 12 20"])` | `.sc-91437f7d-4` |
 | `tabLinks` | `div:has(> a[href$="/-/members"]):has(> a[href$="/about"]) > a:not([href*="/classroom"])` | `.sc-ec7c44aa-11 > a:not(...)` |
-| `communityFeed` | none available | `.sc-5cd66e93-3` |
+| `communityFeed` | `form:has(input[placeholder^="Search"])` (header search) | `.sc-4ec28781-13` (feed column, community page only), `.sc-5cd66e93-3` (sidebar), `.sc-ec7c44aa-6` (search slot) |
 
 The `tabLinks` selector uses the fact that the tab bar is the only element with
 both a Members and an About link as **direct** children — the sidebar has a
