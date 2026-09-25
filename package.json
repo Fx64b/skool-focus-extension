@@ -1,6 +1,6 @@
 {
   "name": "skool-focus-extension",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "A browser extension that helps you focus while you use the skool.com website.",
   "type": "module",
   "scripts": {

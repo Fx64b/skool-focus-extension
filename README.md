@@ -2,7 +2,7 @@
 
 A modern, cross-browser extension that helps you focus while you use the skool.com website. Built with [WXT](https://wxt.dev/) for maximum compatibility and developer experience.
 
-![Version](https://img.shields.io/badge/version-3.0.0-blue)
+![Version](https://img.shields.io/badge/version-3.1.0-blue)
 ![License](https://img.shields.io/badge/license-GPL--3.0-green)
 ![Build](https://github.com/Fx64b/skool-focus-extension/actions/workflows/build.yml/badge.svg)
 
